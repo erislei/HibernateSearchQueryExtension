@@ -35,7 +35,7 @@ public class Place {
 		this.id = id;
 	}
 
-	@Field(store = Store.NO, index = Index.YES)
+	@Field(store = Store.NO, index = Index.YES )
 	public String getName() {
 		return name;
 	}
@@ -45,7 +45,7 @@ public class Place {
 	}
 
 	@IndexedEmbedded
-	@ManyToOne
+	@OneToMany
 	public Set<Sorcerer> getSorcerers() {
 		return sorcerers;
 	}

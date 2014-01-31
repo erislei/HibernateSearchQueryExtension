@@ -5,6 +5,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Store;
+
 @Entity
 public class Sorcerer {
 
@@ -21,6 +25,7 @@ public class Sorcerer {
 		this.id = id;
 	}
 
+	@Field(store = Store.NO, index = Index.YES)
 	public String getName() {
 		return name;
 	}
