@@ -18,6 +18,7 @@ package de.hotware.hibernate.query;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
+import org.apache.commons.beanutils.WrapDynaBean;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.SearchFactory;
 import org.hibernate.search.batchindexing.MassIndexerProgressMonitor;
@@ -34,6 +36,8 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.junit.Before;
 import org.junit.Test;
+
+import de.hotware.hibernate.query.intelligent.searcher.Util;
 
 public class SearcherTest {
 
@@ -83,6 +87,14 @@ public class SearcherTest {
 			sorcerersAtValinor.add(saruman);
 			valinor.setSorcerers(sorcerersAtValinor);
 			em.persist(valinor);
+
+			Test1 test = new Test1();
+			TestTest testtest = new TestTest();
+			testtest.setProperty("TOAST");
+			test.setTestTest(testtest);
+
+			assertTrue("TOAST".equals(Util.getProperty(new HashMap(), test,
+					"testTest.property")));
 
 			em.flush();
 			tx.commit();

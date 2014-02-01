@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.hibernate.search.annotations.Analyzer;
 
+import de.hotware.hibernate.query.intelligent.annotations.Junction;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
 /**

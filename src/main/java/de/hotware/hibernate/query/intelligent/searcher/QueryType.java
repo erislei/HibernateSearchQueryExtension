@@ -2,7 +2,7 @@
  * This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.*
+ *  (at your option) any later version.*
  *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,23 +14,25 @@
  *   
  *   (C) Martin Braun 2014
  */
-package de.hotware.hibernate.query;
+package de.hotware.hibernate.query.intelligent.searcher;
 
-import de.hotware.hibernate.query.intelligent.annotations.Junction;
-import de.hotware.hibernate.query.stringbridge.ToStringStringBridge;
+import org.hibernate.search.query.dsl.QueryBuilder;
 
-public class PlaceQueryBean extends BaseQueryBean<Place> {
+/**
+ * Interface for wrapping the different types of Queries in Hibernate Search
+ * 
+ * @author Martin Braun
+ */
+public interface QueryType {
 
-	private String name;
+	public org.apache.lucene.search.Query query(QueryBuilder queryBuilder,
+			String fieldName, Object value);
 
-	@SearchField(fieldNames = { "name", "sorcerers.name" }, betweenFields = Junction.SHOULD, 
-			queryType = StockQueryTypes.Term.class, stringBridge = ToStringStringBridge.class)
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+	/**
+	 * @return true if the values should be passed as Strings into the query
+	 *         method (if true, such a QueryType can only be used with a
+	 *         StringBridge and should only be used with an Analyzer)
+	 */
+	public boolean valueAsString();
 
 }

@@ -14,7 +14,7 @@
  *   
  *   (C) Martin Braun 2014
  */
-package de.hotware.hibernate.query;
+package de.hotware.hibernate.query.intelligent.annotations;
 
 import org.apache.lucene.search.Query;
 import org.hibernate.search.query.dsl.BooleanJunction;

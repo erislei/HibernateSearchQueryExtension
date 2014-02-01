@@ -1,4 +1,4 @@
-package de.hotware.hibernate.query.intelligent;
+package de.hotware.hibernate.query.intelligent.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,10 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface MustNot {
-
-	SearchField value() default @SearchField;
+public @interface Queries {
 	
-	String subQuery() default "";
+	Query[] value();
 
 }
