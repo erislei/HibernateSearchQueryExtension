@@ -14,7 +14,7 @@
  *   
  *   (C) Martin Braun 2014
  */
-package de.hotware.hiberante.query.stringbridge;
+package de.hotware.hibernate.query.stringbridge;
 
 import org.hibernate.search.bridge.StringBridge;
 

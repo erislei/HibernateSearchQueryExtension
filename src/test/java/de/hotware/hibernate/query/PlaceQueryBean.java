@@ -16,7 +16,7 @@
  */
 package de.hotware.hibernate.query;
 
-import de.hotware.hiberante.query.stringbridge.ToStringStringBridge;
+import de.hotware.hibernate.query.stringbridge.ToStringStringBridge;
 
 public class PlaceQueryBean extends BaseQueryBean<Place> {
 
