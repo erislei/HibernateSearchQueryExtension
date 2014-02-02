@@ -20,9 +20,14 @@ import de.hotware.hibernate.query.intelligent.annotations.Must;
 import de.hotware.hibernate.query.intelligent.annotations.Queries;
 import de.hotware.hibernate.query.intelligent.annotations.Query;
 import de.hotware.hibernate.query.intelligent.annotations.SearchField;
+import de.hotware.hibernate.query.intelligent.annotations.SubQueries;
+import de.hotware.hibernate.query.intelligent.annotations.SubQuery;
 import de.hotware.hibernate.query.intelligent.searcher.BaseQueryBean;
 
-@Queries(@Query(must = @Must(@SearchField(fieldName = "name", propertyName = "name"))))
+@Queries({
+		@Query(profile = "name", must = @Must(@SearchField(fieldName = "name", propertyName = "name"))),
+		@Query(profile = "notName", must = @Must(subQuery = "1")) })
+@SubQueries(@SubQuery(id = "1", query = @Query(must = @Must(not = true, value = @SearchField(fieldName = "name", propertyName = "name")))))
 public class PlaceQueryBean extends BaseQueryBean<Place> {
 
 	private String name;

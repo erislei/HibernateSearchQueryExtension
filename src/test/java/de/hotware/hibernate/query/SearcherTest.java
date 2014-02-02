@@ -18,6 +18,7 @@ package de.hotware.hibernate.query;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +43,8 @@ public class SearcherTest {
 
 	private EntityManagerFactory emf;
 	private MultiClassSearcher multiClassSearcher = new MultiClassSearcherImpl();
+	
+	private Place valinor;
 
 	@Before
 	public void setup() {
@@ -86,6 +89,8 @@ public class SearcherTest {
 			sorcerersAtValinor.add(saruman);
 			valinor.setSorcerers(sorcerersAtValinor);
 			em.persist(valinor);
+			
+			this.valinor = valinor;
 
 			Test1 test = new Test1();
 			TestTest testtest = new TestTest();
@@ -102,6 +107,7 @@ public class SearcherTest {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void test() throws InterruptedException {
 		FullTextSession session;
@@ -125,12 +131,27 @@ public class SearcherTest {
 			// now that we tested some normal queries, let the magic happen:
 			// well, this is just some normal easy magic :P
 			PlaceQueryBean placeQuery = new PlaceQueryBean();
-			placeQuery.setName("Valinor");
-			@SuppressWarnings("unchecked")
+			placeQuery.setName("Valinor");			
+			
+			List<String> names;		
 			List<Place> list = this.multiClassSearcher
 					.search(placeQuery, session, Place.class,
-							PlaceQueryBean.class).getFullTextQuery().list();
-			assertTrue(list.size() > 0);
+							PlaceQueryBean.class, "notName").getFullTextQuery().list();
+			names = new ArrayList<>();
+			for(Place place : list) {
+				names.add(place.getName());	
+			}
+			assertTrue(!names.contains(this.valinor.getName()));
+			System.out.println(list);
+			
+			list = this.multiClassSearcher
+					.search(placeQuery, session, Place.class,
+							PlaceQueryBean.class, "name").getFullTextQuery().list();
+			names = new ArrayList<>();
+			for(Place place : list) {
+				names.add(place.getName());	
+			}
+			assertTrue(names.contains(this.valinor.getName()));
 			System.out.println(list);
 		} finally {
 			if (session != null) {
