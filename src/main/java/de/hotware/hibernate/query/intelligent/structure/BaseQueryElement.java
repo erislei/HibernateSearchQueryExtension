@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.hibernate.search.SearchFactory;
 import org.hibernate.search.bridge.StringBridge;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
@@ -18,11 +19,9 @@ public abstract class BaseQueryElement implements QueryElement {
 
 	private final Query subQuery;
 	private int boost = Integer.MIN_VALUE;
-	private final Junction betweenValues;
 
-	protected BaseQueryElement(Query subQuery, Junction betweenValues) {
+	protected BaseQueryElement(Query subQuery) {
 		this.subQuery = subQuery;
-		this.betweenValues = betweenValues;
 	}
 
 	/**
@@ -51,32 +50,27 @@ public abstract class BaseQueryElement implements QueryElement {
 	@Override
 	public boolean hasSubQuery() {
 		return this.subQuery != null;
-	}	
-
-	public Junction getBetweenValues() {
-		return betweenValues;
 	}
 
 	@Override
 	public boolean constructQuery(
 			@SuppressWarnings("rawtypes") BooleanJunction<BooleanJunction> junction,
-			QueryBuilder queryBuilder, Object bean, CachedInfo cachedInfo) {
+			QueryBuilder queryBuilder, Object bean, CachedInfo cachedInfo, SearchFactory searchFactory) {
 		return this.subQuery != null ? this.subQuery.constructQuery(junction,
-				queryBuilder, bean, cachedInfo) : false;
+				queryBuilder, bean, cachedInfo, searchFactory) : false;
 	}
 
 	protected static boolean buildValueQuery(
 			QueryBuilder queryBuilder,
 			@SuppressWarnings("rawtypes") BooleanJunction<BooleanJunction> junction,
-			Object initial, QueryType queryType, String property,
-			String fieldName, CachedInfo cachedInfo, Junction betweenValues) {
+			Object initial, QueryType queryType, StringBridge stringBridge,
+			Analyzer analyzer, String property, String fieldName,
+			Junction betweenValues) {
 		List<Object> values = new ArrayList<>();
 		// either add the object values to the list or convert them to
 		// strings first this is handled in the addValueToList method
 		// depending on queryType.valueAsString();
 		{
-			StringBridge stringBridge = cachedInfo.stringBridges.get(property);
-			Analyzer analyzer = cachedInfo.analyzers.get(property);
 			List<Object> initialValues = new ArrayList<>();
 			if (initial instanceof Iterable<?>) {
 				for (Object val : ((Iterable<?>) initial)) {
@@ -89,6 +83,9 @@ public abstract class BaseQueryElement implements QueryElement {
 			}
 			for (Object val : initialValues) {
 				if (queryType.valueAsString()) {
+					if(analyzer == null) {
+						throw new IllegalArgumentException("you need an analyzer for this queryType");
+					}
 					String string = stringBridge.objectToString(val);
 					values.addAll(applyAnalyzer(string, analyzer));
 				} else {

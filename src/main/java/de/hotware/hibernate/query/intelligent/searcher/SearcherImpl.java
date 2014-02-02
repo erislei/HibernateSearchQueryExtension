@@ -95,7 +95,7 @@ public class SearcherImpl<T, U extends QueryBean<T>> implements Searcher<T, U> {
 					+ " not available!");
 		}
 		hierarchicalQuery.constructQuery(mainJunction, queryBuilder, queryBean,
-				cachedInfo);
+				cachedInfo, searchFactory);
 
 		// apply the custom query
 		mainJunction = queryBean.customQuery(mainJunction, queryBuilder);

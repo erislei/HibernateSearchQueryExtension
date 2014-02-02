@@ -15,8 +15,6 @@ public @interface Query {
 	
 	Should[] should() default @Should;
 	
-	MustNot[] mustNot() default @MustNot;
-	
 	String profile() default DEFAULT_PROFILE;
 
 }

@@ -17,11 +17,12 @@
 package de.hotware.hibernate.query;
 
 import de.hotware.hibernate.query.intelligent.annotations.Must;
+import de.hotware.hibernate.query.intelligent.annotations.Queries;
 import de.hotware.hibernate.query.intelligent.annotations.Query;
 import de.hotware.hibernate.query.intelligent.annotations.SearchField;
 import de.hotware.hibernate.query.intelligent.searcher.BaseQueryBean;
 
-@Query(must = @Must(@SearchField(fieldName = "name", propertyName = "name")))
+@Queries(@Query(must = @Must(@SearchField(fieldName = "name", propertyName = "name"))))
 public class PlaceQueryBean extends BaseQueryBean<Place> {
 
 	private String name;

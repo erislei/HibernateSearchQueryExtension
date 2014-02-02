@@ -11,6 +11,8 @@ public @interface Must {
 	
 	SearchField value() default @SearchField;
 	
-	String subQuery() default "";;
+	String subQuery() default "";
+	
+	boolean not() default false;
 
 }
