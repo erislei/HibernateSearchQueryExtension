@@ -44,12 +44,11 @@ You only have to add annotations to your
 Parameter-Wrapper class like this:
 
 <pre><code>
+@Queries(@Query(must = @Must(@SearchField(fieldName = "name", propertyName = "name"))))
 public class PlaceQueryBean extends BaseQueryBean<Place> {
 
 	private String name;
 
-	@SearchField(fieldNames = { "name", "sorcerers.name" }, betweenFields = Junction.SHOULD, 
-			queryType = StockQueryTypes.Term.class, stringBridge = ToStringStringBridge.class)
 	public String getName() {
 		return this.name;
 	}
