@@ -1,4 +1,4 @@
-package de.hotware.hibernate.query.intelligent.searcher;
+package de.hotware.hibernate.query.intelligent.structure;
 
 import java.util.ArrayList;
 import java.util.List;

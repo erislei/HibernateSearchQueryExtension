@@ -1,4 +1,4 @@
-package de.hotware.hibernate.query.intelligent.searcher;
+package de.hotware.hibernate.query.intelligent.structure;
 
 import java.io.IOException;
 import java.io.StringReader;

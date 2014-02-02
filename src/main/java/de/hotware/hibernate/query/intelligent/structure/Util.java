@@ -1,4 +1,4 @@
-package de.hotware.hibernate.query.intelligent.searcher;
+package de.hotware.hibernate.query.intelligent.structure;
 
 import java.util.Map;
 import java.util.regex.Pattern;

@@ -1,13 +1,13 @@
 package de.hotware.hibernate.query.intelligent.annotations;
 
-import de.hotware.hibernate.query.QueryType;
-import de.hotware.hibernate.query.StockQueryTypes;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.hibernate.search.annotations.Analyzer;
+
+import de.hotware.hibernate.query.intelligent.structure.QueryType;
+import de.hotware.hibernate.query.intelligent.structure.StockQueryTypes;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })

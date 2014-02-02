@@ -16,15 +16,16 @@
  */
 package de.hotware.hibernate.query;
 
-import de.hotware.hibernate.query.intelligent.annotations.Junction;
-import de.hotware.hibernate.query.stringbridge.ToStringStringBridge;
+import de.hotware.hibernate.query.intelligent.annotations.Must;
+import de.hotware.hibernate.query.intelligent.annotations.Query;
+import de.hotware.hibernate.query.intelligent.annotations.SearchField;
+import de.hotware.hibernate.query.intelligent.searcher.BaseQueryBean;
 
+@Query(must = @Must(@SearchField(fieldName = "name", propertyName = "name")))
 public class PlaceQueryBean extends BaseQueryBean<Place> {
 
 	private String name;
 
-	@SearchField(fieldNames = { "name", "sorcerers.name" }, betweenFields = Junction.SHOULD, 
-			queryType = StockQueryTypes.Term.class, stringBridge = ToStringStringBridge.class)
 	public String getName() {
 		return this.name;
 	}

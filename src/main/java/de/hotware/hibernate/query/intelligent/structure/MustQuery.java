@@ -1,29 +1,32 @@
-package de.hotware.hibernate.query.intelligent.searcher;
+package de.hotware.hibernate.query.intelligent.structure;
 
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import de.hotware.hibernate.query.intelligent.annotations.Junction;
 
-public class ShouldQuery extends BaseQueryElement {
+public class MustQuery extends BaseQueryElement {
 
 	private final String fieldName;
 	private final String property;
 	private final QueryType queryType;
+	private final boolean not;
 
-	public ShouldQuery(Query subQuery, boolean not, Junction betweenJunction) {
-		super(subQuery, betweenJunction);
+	public MustQuery(Query subQuery, boolean not, Junction betweenValues) {
+		super(subQuery, betweenValues);
 		this.fieldName = null;
 		this.property = null;
 		this.queryType = null;
+		this.not = not;
 	}
 
-	public ShouldQuery(String fieldName, String property, QueryType queryType,
-			Junction betweenJunction) {
-		super(null, betweenJunction);
+	public MustQuery(String fieldName, String property, QueryType queryType,
+			boolean not, Junction betweenValues) {
+		super(null, betweenValues);
 		this.fieldName = fieldName;
 		this.property = property;
 		this.queryType = queryType;
+		this.not = not;
 	}
 
 	@Override
@@ -36,7 +39,11 @@ public class ShouldQuery extends BaseQueryElement {
 			BooleanJunction<BooleanJunction> subJunction = queryBuilder.bool();
 			if (super.constructQuery(subJunction, queryBuilder, bean,
 					cachedInfo)) {
-				junction.should(subJunction.createQuery());
+				if (this.not) {
+					junction.must(subJunction.createQuery()).not();
+				} else {
+					junction.must(subJunction.createQuery());
+				}
 				ret = true;
 			}
 		} else {
@@ -52,7 +59,11 @@ public class ShouldQuery extends BaseQueryElement {
 					if (this.hasBoostSet()) {
 						valuesJunction.boostedTo(this.getBoost());
 					}
-					junction.should(valuesJunction.createQuery());
+					if (this.not) {
+						junction.must(valuesJunction.createQuery()).not();
+					} else {
+						junction.must(valuesJunction.createQuery());
+					}
 					ret = true;
 				}
 			}

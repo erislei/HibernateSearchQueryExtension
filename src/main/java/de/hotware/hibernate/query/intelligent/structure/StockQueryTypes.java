@@ -14,7 +14,7 @@
  *   
  *   (C) Martin Braun 2014
  */
-package de.hotware.hibernate.query.intelligent.searcher;
+package de.hotware.hibernate.query.intelligent.structure;
 
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.TermMatchingContext;

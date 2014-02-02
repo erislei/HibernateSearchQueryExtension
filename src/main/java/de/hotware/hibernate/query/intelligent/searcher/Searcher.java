@@ -14,36 +14,27 @@
  *   
  *   (C) Martin Braun 2014
  */
-package de.hotware.hibernate.query;
+package de.hotware.hibernate.query.intelligent.searcher;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.hibernate.search.FullTextSession;
 
-import de.hotware.hibernate.query.intelligent.annotations.Junction;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
 /**
- * a method annotated with this will
- * be considered as a value to be searched
- * for when used with Searcher.search(...)
- * 
- * This should be used when multiple SearchFields are needed
+ * The Searcher interface.
  * 
  * @author Martin Braun
+ * 
+ * @param <T>
+ *            the type of the bean to return search requests
  */
-public @interface SearchFields {
+public interface Searcher<T, U extends QueryBean<T>> {
+
+	public SearchResult search(U queryBean, FullTextSession fullTextSession,
+			String profile);
 
 	/**
-	 * the searchFields array
+	 * same as {@link #search(QueryBean, FullTextSession, String)} but with the
+	 * default profile
 	 */
-	SearchField[] searchFields();
-
-	/**
-	 * how these SearchFields will be combined with the main query
-	 */
-	Junction topLevel() default Junction.MUST;
+	public SearchResult search(U queryBean, FullTextSession fullTextSession);
 
 }

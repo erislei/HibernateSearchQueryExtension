@@ -14,7 +14,7 @@
  *   
  *   (C) Martin Braun 2014
  */
-package de.hotware.hibernate.query;
+package de.hotware.hibernate.query.intelligent.searcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,12 +33,17 @@ public class MultiClassSearcherImpl implements MultiClassSearcher {
 	public MultiClassSearcherImpl() {
 		this.searchers = new HashMap<>();
 	}
-	
+
 	@Override
 	public <T, U extends QueryBean<T>> SearchResult search(U queryBean,
 			FullTextSession fullTextSession, Class<T> indexedClass,
 			Class<U> queryBeanClass) {
-		return this.search(queryBean, fullTextSession, indexedClass, queryBeanClass, SearchField.DEFAULT_PROFILE);
+		return this
+				.search(queryBean,
+						fullTextSession,
+						indexedClass,
+						queryBeanClass,
+						de.hotware.hibernate.query.intelligent.annotations.Query.DEFAULT_PROFILE);
 	}
 
 	@Override
@@ -49,7 +54,7 @@ public class MultiClassSearcherImpl implements MultiClassSearcher {
 				indexedClass, queryBeanClass);
 		@SuppressWarnings("unchecked")
 		Searcher<T, U> searcher = (Searcher<T, U>) this.searchers.get(wrapper);
-		if(searcher == null) {
+		if (searcher == null) {
 			searcher = new SearcherImpl<T, U>(indexedClass, queryBeanClass);
 			this.searchers.put(wrapper, searcher);
 		}

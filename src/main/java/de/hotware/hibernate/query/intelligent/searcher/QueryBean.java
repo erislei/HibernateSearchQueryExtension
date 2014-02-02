@@ -14,7 +14,7 @@
  *   
  *   (C) Martin Braun 2014
  */
-package de.hotware.hibernate.query;
+package de.hotware.hibernate.query.intelligent.searcher;
 
 import java.util.Map;
 import java.util.Set;

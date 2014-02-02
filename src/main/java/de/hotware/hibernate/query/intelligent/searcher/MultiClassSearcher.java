@@ -14,7 +14,7 @@
  *   
  *   (C) Martin Braun 2014
  */
-package de.hotware.hibernate.query;
+package de.hotware.hibernate.query.intelligent.searcher;
 
 import org.hibernate.search.FullTextSession;
 
@@ -32,7 +32,7 @@ public interface MultiClassSearcher {
 
 	/**
 	 * same as {@link #search(QueryBean, FullTextSession, Class, Class, String)}
-	 * but with {@link SearchField#DEFAULT_PROFILE} as profile
+	 * but with the default profile
 	 */
 	public <T, U extends QueryBean<T>> SearchResult search(U queryBean,
 			FullTextSession fullTextSession, Class<T> indexedClass,
