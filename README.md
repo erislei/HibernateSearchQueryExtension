@@ -1,6 +1,8 @@
 HibernateSearchQueryExtension
 =====================
 
+[![Gitter chat](https://badges.gitter.im/s4ke/HibernateSearchQueryExtension.png)](https://gitter.im/s4ke/HibernateSearchQueryExtension)
+
 This project is an attempt (currently more of a proof of concept) to
 make queries in Hibernate even easier than with the already
 existing DSL.
