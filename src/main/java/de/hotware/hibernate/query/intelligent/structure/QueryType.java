@@ -16,7 +16,12 @@
  */
 package de.hotware.hibernate.query.intelligent.structure;
 
+import java.util.List;
+import java.util.Map;
+
 import org.hibernate.search.query.dsl.QueryBuilder;
+
+import de.hotware.hibernate.query.intelligent.annotations.Parameter;
 
 /**
  * Interface for wrapping the different types of Queries in Hibernate Search
@@ -26,7 +31,8 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 public interface QueryType {
 
 	public org.apache.lucene.search.Query query(QueryBuilder queryBuilder,
-			String fieldName, Object value);
+			String fieldName, Object value, List<Parameter> staticParameters,
+			Map<String, Object> dynamicParameters);
 
 	/**
 	 * @return true if the values should be passed as Strings into the query

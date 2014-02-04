@@ -16,12 +16,16 @@
  */
 package de.hotware.hibernate.query.intelligent.structure;
 
+import java.util.List;
+
 import org.hibernate.search.SearchFactory;
 import org.hibernate.search.bridge.StringBridge;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import de.hotware.hibernate.query.intelligent.annotations.Junction;
+import de.hotware.hibernate.query.intelligent.annotations.Parameter;
+import de.hotware.hibernate.query.intelligent.annotations.PropertyParameter;
 
 public class MustQuery extends BaseQueryElement {
 
@@ -32,6 +36,8 @@ public class MustQuery extends BaseQueryElement {
 	private final String analyzer;
 	private final boolean not;
 	private final Junction betweenValues;
+	private final List<Parameter> parameters;
+	private final List<PropertyParameter> dynamicParameters;
 
 	public MustQuery(Query subQuery, boolean not) {
 		super(subQuery);
@@ -42,11 +48,14 @@ public class MustQuery extends BaseQueryElement {
 		this.stringBridge = null;
 		this.analyzer = null;
 		this.betweenValues = null;
+		this.parameters = null;
+		this.dynamicParameters = null;
 	}
 
 	public MustQuery(String fieldName, String property, QueryType queryType,
 			StringBridge stringBridge, String analyzer, boolean not,
-			Junction betweenValues) {
+			Junction betweenValues, List<Parameter> parameters,
+			List<PropertyParameter> dynamicParameters) {
 		super(null);
 		this.fieldName = fieldName;
 		this.property = property;
@@ -55,6 +64,8 @@ public class MustQuery extends BaseQueryElement {
 		this.stringBridge = stringBridge;
 		this.analyzer = analyzer;
 		this.betweenValues = betweenValues;
+		this.parameters = parameters;
+		this.dynamicParameters = dynamicParameters;
 	}
 
 	@Override
@@ -81,9 +92,11 @@ public class MustQuery extends BaseQueryElement {
 				@SuppressWarnings("rawtypes")
 				BooleanJunction<BooleanJunction> valuesJunction = queryBuilder
 						.bool();
-				if (buildValueQuery(queryBuilder, valuesJunction, value,
-						queryType, this.stringBridge, cachedInfo.getAnalyzer(this.analyzer, searchFactory), property,
-						fieldName, this.betweenValues)) {
+				if (buildValueQuery(queryBuilder, valuesJunction, bean, value,
+						queryType, this.stringBridge,
+						cachedInfo.getAnalyzer(this.analyzer, searchFactory),
+						property, fieldName, this.betweenValues,
+						this.parameters, this.dynamicParameters, cachedInfo)) {
 					if (this.hasBoostSet()) {
 						valuesJunction.boostedTo(this.getBoost());
 					}

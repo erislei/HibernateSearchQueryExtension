@@ -16,6 +16,7 @@
  */
 package de.hotware.hibernate.query.intelligent.structure;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -89,20 +90,23 @@ public class QueryHierarchyExtractorImpl implements QueryHierarchyExtractor {
 				ret.addQueryElement(mustQuery);
 			} else if (check(must.value(), cachedInfo)) {
 				SearchField searchField = must.value();
-				String analyzer = searchField.queryAnalyzer().definition();
+				String analyzer = searchField.queryType().queryAnalyzer()
+						.definition();
 				QueryType queryType = cachedInfo.getCachedQueryType(searchField
-						.queryType());
+						.queryType().value());
 				StringBridge stringBridge = null;
-				if (!searchField.stringBridge().equals(void.class)) {
+				if (!searchField.queryType().stringBridge().equals(void.class)) {
 					// TODO: maybe typecheck?
 					stringBridge = cachedInfo
 							.getCachedStringBridge((Class<? extends StringBridge>) searchField
-									.stringBridge());
+									.queryType().stringBridge());
 				}
-				
 				MustQuery mustQuery = new MustQuery(searchField.fieldName(),
 						searchField.propertyName(), queryType, stringBridge,
-						analyzer, must.not(), searchField.betweenValues());
+						analyzer, must.not(), searchField.betweenValues(),
+						Arrays.asList(searchField.queryType().parameters()),
+						Arrays.asList(searchField.queryType()
+								.propertyParameters()));
 				ret.addQueryElement(mustQuery);
 			}
 		}
@@ -117,22 +121,26 @@ public class QueryHierarchyExtractorImpl implements QueryHierarchyExtractor {
 								subQueriesMap, newPassedQueries, cachedInfo);
 				ShouldQuery shouldQuery = new ShouldQuery(finishedSubQuery);
 				ret.addQueryElement(shouldQuery);
-			} else if(check(should.value(), cachedInfo)) {
+			} else if (check(should.value(), cachedInfo)) {
 				SearchField searchField = should.value();
-				String analyzer = searchField.queryAnalyzer().definition();
+				String analyzer = searchField.queryType().queryAnalyzer()
+						.definition();
 				QueryType queryType = cachedInfo.getCachedQueryType(searchField
-						.queryType());
+						.queryType().value());
 				StringBridge stringBridge = null;
-				if (!searchField.stringBridge().equals(void.class)) {
+				if (!searchField.queryType().stringBridge().equals(void.class)) {
 					// TODO: maybe typecheck?
 					stringBridge = cachedInfo
 							.getCachedStringBridge((Class<? extends StringBridge>) searchField
-									.stringBridge());
+									.queryType().stringBridge());
 				}
 				ShouldQuery shouldQuery = new ShouldQuery(
 						searchField.fieldName(), searchField.propertyName(),
 						queryType, stringBridge, analyzer,
-						searchField.betweenValues());
+						searchField.betweenValues(), Arrays.asList(searchField
+								.queryType().parameters()),
+						Arrays.asList(searchField.queryType()
+								.propertyParameters()));
 				ret.addQueryElement(shouldQuery);
 			}
 		}
@@ -142,8 +150,8 @@ public class QueryHierarchyExtractorImpl implements QueryHierarchyExtractor {
 	@SuppressWarnings("unchecked")
 	private static boolean check(SearchField searchField, CachedInfo cachedInfo) {
 		QueryType queryType = cachedInfo.getCachedQueryType(searchField
-				.queryType());
-		Class<?> stringBridgeClass = searchField.stringBridge();
+				.queryType().value());
+		Class<?> stringBridgeClass = searchField.queryType().stringBridge();
 		StringBridge stringBridge = null;
 		if (!stringBridgeClass.equals(void.class)) {
 			try {
@@ -158,7 +166,8 @@ public class QueryHierarchyExtractorImpl implements QueryHierarchyExtractor {
 			throw new IllegalArgumentException(queryType.getClass()
 					+ " needs a stringBridge");
 		}
-		return !searchField.fieldName().equals("") && !searchField.propertyName().equals("");
+		return !searchField.fieldName().equals("")
+				&& !searchField.propertyName().equals("");
 	}
 
 }

@@ -19,7 +19,9 @@ package de.hotware.hibernate.query.intelligent.structure;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -30,6 +32,8 @@ import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import de.hotware.hibernate.query.intelligent.annotations.Junction;
+import de.hotware.hibernate.query.intelligent.annotations.Parameter;
+import de.hotware.hibernate.query.intelligent.annotations.PropertyParameter;
 
 public abstract class BaseQueryElement implements QueryElement {
 
@@ -71,7 +75,8 @@ public abstract class BaseQueryElement implements QueryElement {
 	@Override
 	public boolean constructQuery(
 			@SuppressWarnings("rawtypes") BooleanJunction<BooleanJunction> junction,
-			QueryBuilder queryBuilder, Object bean, CachedInfo cachedInfo, SearchFactory searchFactory) {
+			QueryBuilder queryBuilder, Object bean, CachedInfo cachedInfo,
+			SearchFactory searchFactory) {
 		return this.subQuery != null ? this.subQuery.constructQuery(junction,
 				queryBuilder, bean, cachedInfo, searchFactory) : false;
 	}
@@ -79,9 +84,12 @@ public abstract class BaseQueryElement implements QueryElement {
 	protected static boolean buildValueQuery(
 			QueryBuilder queryBuilder,
 			@SuppressWarnings("rawtypes") BooleanJunction<BooleanJunction> junction,
-			Object initial, QueryType queryType, StringBridge stringBridge,
-			Analyzer analyzer, String property, String fieldName,
-			Junction betweenValues) {
+			Object bean, Object initial, QueryType queryType,
+			StringBridge stringBridge, Analyzer analyzer, String property,
+			String fieldName, Junction betweenValues,
+			List<Parameter> staticParameters,
+			List<PropertyParameter> dynamicParameters, CachedInfo cachedInfo) {
+
 		List<Object> values = new ArrayList<>();
 		// either add the object values to the list or convert them to
 		// strings first this is handled in the addValueToList method
@@ -99,8 +107,9 @@ public abstract class BaseQueryElement implements QueryElement {
 			}
 			for (Object val : initialValues) {
 				if (queryType.valueAsString()) {
-					if(analyzer == null) {
-						throw new IllegalArgumentException("you need an analyzer for this queryType");
+					if (analyzer == null) {
+						throw new IllegalArgumentException(
+								"you need an analyzer for this queryType");
 					}
 					String string = stringBridge.objectToString(val);
 					values.addAll(applyAnalyzer(string, analyzer));
@@ -109,9 +118,16 @@ public abstract class BaseQueryElement implements QueryElement {
 				}
 			}
 		}
+		Map<String, Object> dynamicParameterMap = new HashMap<>();
+		// get the dynamic parameters
+		for (PropertyParameter par : dynamicParameters) {
+			dynamicParameterMap.put(par.key(),
+					Util.getProperty(cachedInfo, bean, par.property()));
+		}
 		for (Object val : values) {
 			org.apache.lucene.search.Query query = queryType.query(
-					queryBuilder, fieldName, val);
+					queryBuilder, fieldName, val, staticParameters,
+					dynamicParameterMap);
 			betweenValues.combine(junction, query);
 		}
 		return values.size() > 0;

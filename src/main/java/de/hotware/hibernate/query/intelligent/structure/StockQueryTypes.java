@@ -16,8 +16,13 @@
  */
 package de.hotware.hibernate.query.intelligent.structure;
 
+import java.util.List;
+import java.util.Map;
+
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.hibernate.search.query.dsl.TermMatchingContext;
+
+import de.hotware.hibernate.query.intelligent.annotations.Parameter;
 
 public class StockQueryTypes {
 
@@ -29,7 +34,9 @@ public class StockQueryTypes {
 
 		@Override
 		public org.apache.lucene.search.Query query(QueryBuilder queryBuilder,
-				String fieldName, Object value) {
+				String fieldName, Object value,
+				List<Parameter> staticParameters,
+				Map<String, Object> dynamicParameters) {
 			TermMatchingContext context = queryBuilder.keyword().onField(
 					fieldName);
 			return context.matching(value).createQuery();
@@ -46,15 +53,17 @@ public class StockQueryTypes {
 
 		@Override
 		public org.apache.lucene.search.Query query(QueryBuilder queryBuilder,
-				String fieldName, Object value) {
+				String fieldName, Object value,
+				List<Parameter> staticParameters,
+				Map<String, Object> dynamicParameters) {
 			TermMatchingContext context = queryBuilder.keyword().wildcard()
 					.onField(fieldName);
 			// ignore the fieldbridge and analyzer because we already have
 			// the value as a string
 			context = context.ignoreFieldBridge();
 			context = context.ignoreAnalyzer();
-			return  context.matching(
-					String.format("%s*", (String) value)).createQuery();
+			return context.matching(String.format("%s*", (String) value))
+					.createQuery();
 		}
 
 		@Override

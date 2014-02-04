@@ -16,12 +16,16 @@
  */
 package de.hotware.hibernate.query.intelligent.structure;
 
+import java.util.List;
+
 import org.hibernate.search.SearchFactory;
 import org.hibernate.search.bridge.StringBridge;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import de.hotware.hibernate.query.intelligent.annotations.Junction;
+import de.hotware.hibernate.query.intelligent.annotations.Parameter;
+import de.hotware.hibernate.query.intelligent.annotations.PropertyParameter;
 
 public class ShouldQuery extends BaseQueryElement {
 
@@ -31,6 +35,8 @@ public class ShouldQuery extends BaseQueryElement {
 	private final Junction betweenValues;
 	private final StringBridge stringBridge;
 	private final String analyzer;
+	private final List<Parameter> parameters;
+	private final List<PropertyParameter> dynamicParameters;
 
 	public ShouldQuery(Query subQuery) {
 		super(subQuery);
@@ -40,10 +46,13 @@ public class ShouldQuery extends BaseQueryElement {
 		this.betweenValues = null;
 		this.stringBridge = null;
 		this.analyzer = null;
+		this.parameters = null;
+		this.dynamicParameters = null;
 	}
 
 	public ShouldQuery(String fieldName, String property, QueryType queryType,
-			StringBridge stringBridge, String analyzer, Junction betweenValues) {
+			StringBridge stringBridge, String analyzer, Junction betweenValues,
+			List<Parameter> parameters, List<PropertyParameter> dynamicParameters) {
 		super(null);
 		this.fieldName = fieldName;
 		this.property = property;
@@ -51,12 +60,15 @@ public class ShouldQuery extends BaseQueryElement {
 		this.betweenValues = betweenValues;
 		this.stringBridge = stringBridge;
 		this.analyzer = analyzer;
+		this.parameters = parameters;
+		this.dynamicParameters = dynamicParameters;
 	}
 
 	@Override
 	public boolean constructQuery(
 			@SuppressWarnings("rawtypes") BooleanJunction<BooleanJunction> junction,
-			QueryBuilder queryBuilder, Object bean, CachedInfo cachedInfo, SearchFactory searchFactory) {
+			QueryBuilder queryBuilder, Object bean, CachedInfo cachedInfo,
+			SearchFactory searchFactory) {
 		boolean ret = false;
 		if (this.hasSubQuery()) {
 			@SuppressWarnings("rawtypes")
@@ -67,15 +79,16 @@ public class ShouldQuery extends BaseQueryElement {
 				ret = true;
 			}
 		} else {
-			Object value = Util.getProperty(cachedInfo, bean,
-					this.property);
+			Object value = Util.getProperty(cachedInfo, bean, this.property);
 			if (value != null) {
 				@SuppressWarnings("rawtypes")
 				BooleanJunction<BooleanJunction> valuesJunction = queryBuilder
 						.bool();
-				if (buildValueQuery(queryBuilder, valuesJunction, value,
-						queryType, this.stringBridge, cachedInfo.getAnalyzer(this.analyzer, searchFactory), property,
-						fieldName, this.betweenValues)) {
+				if (buildValueQuery(queryBuilder, valuesJunction, bean, value,
+						queryType, this.stringBridge,
+						cachedInfo.getAnalyzer(this.analyzer, searchFactory),
+						property, fieldName, this.betweenValues,
+						this.parameters, this.dynamicParameters, cachedInfo)) {
 					if (this.hasBoostSet()) {
 						valuesJunction.boostedTo(this.getBoost());
 					}
